@@ -1,2 +1,2 @@
-# Yu-Gi-OH
+# Yu-Gi-Oh
 TBD
