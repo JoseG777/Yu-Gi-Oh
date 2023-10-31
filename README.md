@@ -1,2 +1,2 @@
 # Yu-Gi-Oh
-TBD
+Welcome, Yu-Gi-Oh lovers!
