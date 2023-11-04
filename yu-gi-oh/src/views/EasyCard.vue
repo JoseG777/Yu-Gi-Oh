@@ -1,17 +1,33 @@
 <template>
   <div class="quiz">
-    <button @click="getQuestion">Get Question</button>
-    <h1> Which card matches the following description:</h1>
-    <h2>{{ question }}</h2>
-    <ul>
-      <li @click="checkAnswer(option1)">{{ option1 }}</li>
-      <li @click="checkAnswer(option2)">{{ option2 }}</li>
-      <li @click="checkAnswer(option3)">{{ option3 }}</li>
-      <li @click="checkAnswer(option4)">{{ option4 }}</li>
-    </ul>
-    <div v-if="showResult">
-      <p>{{ resultMessage }}</p>
+    <button @click="getQuestion" v-if = "!hideBegin"> Begin </button>
+
+    <div v-if = "!Lose && !Win">
+
+      <h1> Which card matches the following description:</h1>
+      <h2>{{ question }}</h2>
+      <ul>
+        <li @click="checkAnswer(option1)">{{ option1 }}</li>
+        <li @click="checkAnswer(option2)">{{ option2 }}</li>
+        <li @click="checkAnswer(option3)">{{ option3 }}</li>
+        <li @click="checkAnswer(option4)">{{ option4 }}</li>
+      </ul>
+
+      <div v-if="showResult">
+        <p>{{ resultMessage }}</p>
+        <button @click = "getQuestion"> Next </button>
+      </div>
+
     </div>
+
+    <div v-if = "Win">
+      <img :src="require('@/assets/win.gif')">
+    </div>
+
+    <div v-if = "Lose">
+      <img :src="require('@/assets/lose.gif')">
+    </div>
+
   </div>
 </template>
 
@@ -41,19 +57,30 @@ export default {
       'XYZ Monster',
     ]);
 
+    const chosenType = ref('');
+
     const option1 = ref('');
     const option2 = ref('');
     const option3 = ref('');
     const option4 = ref('');
+
     const question = ref('');
+
     const correctAnswer = ref('');
     const showResult = ref(false);
     const resultMessage = ref('');
-    const chosenType = ref('');
+
+    const Lose = ref(false);
+    const correctCount = ref(0);
+    const Win = ref(false);
+
+    const hideBegin = ref(false);
+
 
     const getQuestion = async () => {
       try {
         showResult.value = false;
+        hideBegin.value = true;
         chosenType.value = types.value[Math.floor(Math.random() * types.value.length)];
         const response = await axios.get(`https://db.ygoprodeck.com/api/v7/cardinfo.php?type=${chosenType.value}`);
         const data = response.data.data;
@@ -79,10 +106,17 @@ export default {
     const checkAnswer = (selectedOption) => {
       if (selectedOption === correctAnswer.value) {
         resultMessage.value = 'Correct!';
+        showResult.value = true;
+        correctCount.value += 1;
+        if(correctCount.value == 4 && correctCount.value != 0)
+        {
+          Win.value = true;
+          correctCount.value = 0;
+        }
       } else {
-        resultMessage.value = 'Incorrect. The correct answer is: ' + correctAnswer.value;
+        Lose.value = true;
+        correctCount.value = 0;
       }
-      showResult.value = true;
     };
 
     return {
@@ -95,6 +129,10 @@ export default {
       option4,
       showResult,
       resultMessage,
+      Lose,
+      correctCount,
+      Win,
+      hideBegin,
       getQuestion,
       checkAnswer,
     };

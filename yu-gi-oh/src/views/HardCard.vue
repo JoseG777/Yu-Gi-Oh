@@ -18,6 +18,14 @@
 
         </div>
 
+        <div v-if = "Win">
+          <img :src="require('@/assets/win.gif')">
+        </div>
+
+        <div v-if = "Lose">
+          <img :src="require('@/assets/lose.gif')">
+        </div>
+
     </div>
 
 </template>
